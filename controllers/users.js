@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const {NODE_ENV, JWT_TOKEN} = process.env;
 
 const createUser = (req, res, next) => {
     const {
@@ -28,9 +29,8 @@ const loginUser = (req, res, next) => {
         return Promise.all([ user, bcrypt.compare(password, user.password) ]);
     })
     .then(([user, matches]) => {
-        // const token = jwt.sign({ _id: user._id }, NODE_ENV === 'production' ? JWT_SECRET : 'super-secret-key', { expiresIn: '7d' });
-        // res.status(200).send({ data: token });
-        res.send('Пошел нахуй')
+        const token = jwt.sign({ _id: user._id }, JWT_TOKEN, { expiresIn: '7d' });
+        res.status(200).send({ token });
     })
     .catch(next);
 }

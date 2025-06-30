@@ -5,7 +5,7 @@ const CommandLCD = require('../models/commandLCD');
 
 const sendCommand = (req, res, next) => {
     const { text, clean, turnOff } = req.body;
-    const owner = req.user_id;
+    const owner = req.user._id;
 
     CommandLCD.create({
         owner, text, clean, turnOff
