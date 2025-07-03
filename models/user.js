@@ -6,6 +6,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         minlength: 3,
         maxlength: 21,
+        unique: true,
     },
     password: {
         type: String,
@@ -16,14 +17,14 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
-    deviceId: {
-        type: String,
-        required: true,
-    },
-    token: {
-        type: String,
-        required: true,
-    }
+    // deviceId: {
+    //     type: String,
+    //     required: true,
+    // },
+    // token: {
+    //     type: String,
+    //     required: true,
+    // }
 });
 
 module.exports = mongoose.model('user', userSchema);

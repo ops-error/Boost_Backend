@@ -4,6 +4,7 @@ const deviceSchema = new mongoose.Schema({
     deviceId: {
         type: String,
         required: true,
+        unique: true,
     },
     name: {
         type: String,

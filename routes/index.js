@@ -7,9 +7,11 @@ const authRouter = require('./auth');
 const usersRouter = require('./users');
 const commandsRouter = require('./commands');
 const authMiddleware = require('../middlewares/auth');
+const devicesRouter = require('./devices');
 
 router.use('/', authRouter);
 router.use('/user', authMiddleware, usersRouter);
 router.use('/commands', authMiddleware, commandsRouter);
+router.use('/device', devicesRouter);
 
 module.exports = router;
