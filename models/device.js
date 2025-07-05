@@ -4,12 +4,20 @@ const deviceSchema = new mongoose.Schema({
     deviceId: {
         type: String,
         required: true,
-        unique: true,
     },
-    name: {
+    deviceName: {
         type: String,
         required: true,
     },
+    idAddress: {
+        type: String,
+        required: true
+    },
+    owner: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
+    }
 });
 
 module.exports = mongoose.model('device', deviceSchema);
