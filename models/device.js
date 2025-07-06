@@ -9,7 +9,7 @@ const deviceSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    idAddress: {
+    ipAddress: {
         type: String,
         required: true
     },

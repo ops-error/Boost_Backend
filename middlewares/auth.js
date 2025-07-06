@@ -15,7 +15,13 @@ module.exports = (req, res, next) =>{
         payload = jwt.verify(token, JWT_TOKEN);
         console.log(payload);
     } catch(err) {
-        throw new Error('Иди нахуй это мидлвара авторизации 2');
+        if (err.name === 'TokenExpiredError') {
+      // Ошибка "токен истек" — клиент должен обновить его
+            return res.status(401).json({ 
+                error: "Token expired",
+                action: "refresh_token"
+            });
+        }
     }
 
     req.user = payload;

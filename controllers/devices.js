@@ -1,18 +1,22 @@
 const Device = require('../models/device');
 
-const createDevice = (req, res, next) => {
-    const { name, deviceId } = req.body;
+// создание нового девайса
+// почему не через req,res,next?
+// потому что самостоятельно он использоваться не будет
+// только в цепочке:
+// авторизация. клиент => создание девайса => создание рефреш токена => responce клиенту
+const createDevice = ({
+    owner, deviceId, deviceName, ipAddress
+}) => {
 
     Device.create({
-        deviceId, name
+        owner, deviceId, deviceName, ipAddress
     })
-    .then((device) => res.send({
-        deviceId: device.deviceId,
-        name: device.name,
-    }))
-    .catch(next);
+    .then((device) => {return device});
 }
 
+// а вот это хз зачем я написала
+// может потом понадобится, а пока просто болванка
 const getDevice = (req, res, next) => {
     const { id } = req.body;
 

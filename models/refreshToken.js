@@ -11,13 +11,17 @@ const refreshTokenSchema = new mongoose.Schema({
         required: true
     },
     deviceId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: String,
         ref: 'device',
         required: true
     },
     ipAddress: {
         type: String,
         required: true
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now(),
     }
 });
 

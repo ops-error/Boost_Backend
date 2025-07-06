@@ -2,7 +2,11 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {NODE_ENV, JWT_TOKEN} = process.env;
+const {createUserTokens} = require('../services/user.service');
 
+// создание пользователя
+// не путать с регистрацией
+// тут я власть и я создаю пользователей
 const createUser = (req, res, next) => {
     const {
         username, password, name
@@ -20,21 +24,34 @@ const createUser = (req, res, next) => {
     .catch(next);
 }
 
-const loginUser = (req, res, next) => {
+// авторизация
+async function loginUser (req, res, next) {
     const {
-        username, password
+        username, password, deviceId, deviceName, ipAddress
     } = req.body;
-    User.findOne({ username }).select('+password')
-    .then((user) => {
-        return Promise.all([ user, bcrypt.compare(password, user.password) ]);
-    })
-    .then(([user, matches]) => {
-        const token = jwt.sign({ _id: user._id }, JWT_TOKEN, { expiresIn: '7d' });
-        res.status(200).send({ token });
-    })
-    .catch(next);
+    const user = await User.findOne({ username }).select('+password');
+    if (bcrypt.compare(password, user.password)) {
+        const tokens = await createUserTokens({
+            owner: user._id,
+            deviceId,
+            deviceName,
+            ipAddress
+        });
+        if (!tokens) {
+            throw new Error('иди нахуй корочк');
+        }
+        res.status(200).send({
+            access: tokens.accessToken,
+            refresh: tokens.refreshToken,
+            expiresIn: 3600
+        });
+    }
 }
 
+// обновление ника
+// вообще хз, пока этот контроллер не развиваю
+// у меня там токены-хуёкины плохо работают,
+// а тут эта хуня
 const patchName = (req, res, next) => {
     const {
         name
