@@ -6,6 +6,8 @@ const { JWT_TOKEN } = process.env;
 
 // генерация долгосрока
 // и его добавление в бд
+// ________________________________
+// пока что не используется
 async function createRefreshToken ({owner, deviceId, ipAddress}) {
     const token = generateToken({
         id: owner,

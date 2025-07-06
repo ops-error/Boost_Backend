@@ -4,7 +4,7 @@ const Device = require('../models/device');
 const RefreshToken = require('../models/refreshToken');
 const DuplicateError = require('../errors/duplicate.err');
 
-const generateToken = require('./token.service');
+const { generateRefreshToken, generateAccessToken } = require('./token.service');
 
 // 
 async function createUserTokens({ owner, deviceId, deviceName, ipAddress }){
@@ -16,11 +16,11 @@ async function createUserTokens({ owner, deviceId, deviceName, ipAddress }){
             owner, deviceId, deviceName, ipAddress
         });
 
-        const token = generateToken({
+        const token = generateRefreshToken({
             id: owner,
             deviceId: deviceId,
             ipAddress: ipAddress
-        }, '150d');
+        });
         // на основе устройства создается долгосрок
         refreshToken = await RefreshToken.create({ 
             token,
@@ -39,7 +39,7 @@ async function createUserTokens({ owner, deviceId, deviceName, ipAddress }){
     }
     
     // создание краткосрочного токена
-    const accessToken = generateToken({ id: owner }, '1h');
+    const accessToken = generateAccessToken({ id: owner });
     return { refreshToken: refreshToken.token, accessToken };
 }
 

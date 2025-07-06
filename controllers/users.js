@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const {NODE_ENV, JWT_TOKEN} = process.env;
 const {createUserTokens} = require('../services/user.service');
+const InvalidAuthError = require('../errors/invalid-auth.err');
 
 // создание пользователя
 // не путать с регистрацией
@@ -20,7 +21,6 @@ const createUser = (req, res, next) => {
         name: user.name,
         _id: user._id,
     }))
-    .catch((err) => res.send(err))
     .catch(next);
 }
 
@@ -30,6 +30,10 @@ async function loginUser (req, res, next) {
         username, password, deviceId, deviceName, ipAddress
     } = req.body;
     const user = await User.findOne({ username }).select('+password');
+    if (!user) {
+        throw new InvalidAuthError('Неверный логин или пароль');
+    }
+
     if (bcrypt.compare(password, user.password)) {
         const tokens = await createUserTokens({
             owner: user._id,
