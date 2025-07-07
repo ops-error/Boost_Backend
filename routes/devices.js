@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const {
-    getDevice
+    // getDevice
 } = require('../controllers/devices');
 
-router.get('/', getDevice);
+// router.get('/', getDevice);
 
 module.exports = router;

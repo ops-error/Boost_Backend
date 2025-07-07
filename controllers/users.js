@@ -10,16 +10,17 @@ const InvalidAuthError = require('../errors/invalid-auth.err');
 // тут я власть и я создаю пользователей
 const createUser = (req, res, next) => {
     const {
-        username, password, name
+        username, password, firebaseId
     } = req.body;
     bcrypt.hash(password, 10)
     .then((hash) => User.create({
-        username, name, password: hash,
+        username, password: hash, firebaseId
     }))
     .then((user) => res.send({
         username: user.username,
         name: user.name,
         _id: user._id,
+        firebaseId: user.firebaseId,
     }))
     .catch(next);
 }
@@ -27,20 +28,21 @@ const createUser = (req, res, next) => {
 // авторизация
 async function loginUser (req, res, next) {
     const {
-        username, password, deviceId, deviceName, ipAddress
+        username, password, firebaseId, model
     } = req.body;
     const user = await User.findOne({ username }).select('+password');
     if (!user) {
         throw new InvalidAuthError('Неверный логин или пароль');
     }
-
-    if (bcrypt.compare(password, user.password)) {
+    const userPasswordCompare = await bcrypt.compare(password, user.password);
+    if (userPasswordCompare) {
         const tokens = await createUserTokens({
             owner: user._id,
-            deviceId,
-            deviceName,
-            ipAddress
+            firebaseId,
+            model,
+            role: user.role,
         });
+        console.log(tokens);
         if (!tokens) {
             throw new Error('иди нахуй корочк');
         }

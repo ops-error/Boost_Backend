@@ -6,26 +6,26 @@ const Device = require('../models/device');
 // только в цепочке:
 // авторизация. клиент => создание девайса => создание рефреш токена => responce клиенту
 const createDevice = ({
-    owner, deviceId, deviceName, ipAddress
+    model, firebaseId
 }) => {
 
     Device.create({
-        owner, deviceId, deviceName, ipAddress
+        model, firebaseId
     })
     .then((device) => {return device});
 }
 
 // а вот это хз зачем я написала
 // может потом понадобится, а пока просто болванка
-const getDevice = (req, res, next) => {
-    const { id } = req.body;
+// const getDevice = (req, res, next) => {
+//     const { id } = req.body;
 
-    Device.findOne({ deviceId: id })
-    .then((device) => res.send(device))
-    .catch(next);
-}
+//     Device.findOne({ deviceId: id })
+//     .then((device) => res.send(device))
+//     .catch(next);
+// }
 
 module.exports = {
-    getDevice,
+    // getDevice,
     createDevice,
 }

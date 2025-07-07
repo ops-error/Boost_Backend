@@ -10,12 +10,7 @@ const refreshTokenSchema = new mongoose.Schema({
         ref: 'user',
         required: true
     },
-    deviceId: {
-        type: String,
-        ref: 'device',
-        required: true
-    },
-    ipAddress: {
+    firebaseId: {
         type: String,
         required: true
     },

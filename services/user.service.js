@@ -7,40 +7,38 @@ const DuplicateError = require('../errors/duplicate.err');
 const { generateRefreshToken, generateAccessToken } = require('./token.service');
 
 // 
-async function createUserTokens({ owner, deviceId, deviceName, ipAddress }){
+async function createUserTokens({ owner, firebaseId, model, role }){
     let device;
     let refreshToken;
+    let token;
     try {
         // создается "карточка" устройства
         device = await Device.create({
-            owner, deviceId, deviceName, ipAddress
+            firebaseId, model
         });
 
-        const token = generateRefreshToken({
-            id: owner,
-            deviceId: deviceId,
-            ipAddress: ipAddress
-        });
+        token = await generateRefreshToken();
         // на основе устройства создается долгосрок
         refreshToken = await RefreshToken.create({ 
-            token,
-            owner, 
-            deviceId, 
-            ipAddress
+            token: token.heshedToken,
+            owner,
+            firebaseId,
         });
         if (!device || !refreshToken) {
             throw new Error('gg');
         }
     } catch(error) {
         if (error.code === 11000) {
-            throw new DuplicateError('gg');
+            throw new DuplicateError('Дубликат чево-та, например этот в user.service');
         }
         throw error;
     }
-    
     // создание краткосрочного токена
-    const accessToken = generateAccessToken({ id: owner });
-    return { refreshToken: refreshToken.token, accessToken };
+    const accessToken = generateAccessToken({
+        userId: owner,
+        role: role,
+    });
+    return { refreshToken: token.refreshToken, accessToken };
 }
 
 module.exports = {

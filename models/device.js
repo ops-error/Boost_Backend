@@ -1,23 +1,14 @@
 const mongoose = require('mongoose');
 
 const deviceSchema = new mongoose.Schema({
-    deviceId: {
-        type: String,
-        required: true,
-    },
-    deviceName: {
-        type: String,
-        required: true,
-    },
-    ipAddress: {
+    model: {
         type: String,
         required: true
     },
-    owner: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'user',
+    firebaseId: {
+        type: String,
         required: true
-    }
+    },
 });
 
 module.exports = mongoose.model('device', deviceSchema);
