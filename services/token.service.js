@@ -13,8 +13,17 @@ const generateRefreshToken = async () => {
 }
 
 // создание краткосрочного токена
-const generateAccessToken = (params) => {
-    return jwt.sign(params, JWT_TOKEN, { expiresIn: '1h' });
+const generateAccessToken = ({
+    userId,
+    exp,
+    iat,
+    role
+}) => {
+    return jwt.sign({
+        userId,
+        iat,
+        role
+    }, JWT_TOKEN, { expiresIn: exp });
 }
 
 module.exports = {

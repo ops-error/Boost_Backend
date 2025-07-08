@@ -1,5 +1,3 @@
-// const {createRefreshToken} = require('../controllers/tokens');S
-// const {createDevice} = require('../controllers/devices');
 const Device = require('../models/device');
 const RefreshToken = require('../models/refreshToken');
 const DuplicateError = require('../errors/duplicate.err');
@@ -36,6 +34,8 @@ async function createUserTokens({ owner, firebaseId, model, role }){
     // создание краткосрочного токена
     const accessToken = generateAccessToken({
         userId: owner,
+        exp: '1h',
+        iat: Date.now(),
         role: role,
     });
     return { refreshToken: token.refreshToken, accessToken };

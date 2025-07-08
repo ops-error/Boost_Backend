@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const commandLCDSchema = new mongoose.Schema({
     // owner - id того, кто отправил команду
-    owner: {
+    userId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'user',
         required: true,
