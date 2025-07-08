@@ -4,7 +4,6 @@ const DuplicateError = require('../errors/duplicate.err');
 
 const { generateRefreshToken, generateAccessToken } = require('./token.service');
 
-// 
 const createUserTokens = async ({ userId, firebaseId, model, role }) => {
     try {
         // создается "карточка" устройства
@@ -34,7 +33,6 @@ const createUserTokens = async ({ userId, firebaseId, model, role }) => {
             accessToken 
         };
     } catch(error) {
-        console.error('Token creation error:', error);
         if (error.code === 11000) {
             throw new DuplicateError('Устройство с таким firebaseId уже существует');
         }

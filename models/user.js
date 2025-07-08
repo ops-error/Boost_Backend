@@ -26,7 +26,8 @@ const userSchema = new mongoose.Schema({
     },
     firebaseId: {
         type: String,
-        required: true
+        required: true,
+        default: ' '
     }
 });
 

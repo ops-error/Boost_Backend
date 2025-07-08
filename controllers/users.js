@@ -2,23 +2,23 @@ const bcrypt = require('bcrypt');
 const User = require('../models/user');
 const {createUserTokens} = require('../services/user.service');
 const InvalidAuthError = require ('../errors/invalid-auth.err');
+const DuplicateError = require('../errors/duplicate.err');
 
 // создание пользователя
 // не путать с регистрацией
 // тут я власть и я создаю пользователей
 const createUser = (req, res, next) => {
     const {
-        username, password, firebaseId
+        username, password
     } = req.body;
     bcrypt.hash(password, 10)
     .then((hash) => User.create({
-        username, password: hash, firebaseId
+        username, password: hash
     }))
     .then((user) => res.send({
         username: user.username,
         name: user.name,
-        userId: user._id,
-        firebaseId: user.firebaseId,
+        userId: user._id
     }))
     .catch(next);
 }
@@ -32,14 +32,21 @@ const loginUser = async (req, res, next) => {
             return next(new InvalidAuthError('Необходимо указать логин и пароль'));
         }
 
-        const user = await User.findOne({ username }).select('+password');
+        let user = await User.findOne({ username }).select('+password');
         if (!user) {
-            return next(new InvalidAuthError('Неверный логин или пароль'));
+            return next(new InvalidAuthError('Неверный логин или пароль2'));
         }
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            return next(new InvalidAuthError('Неверный логин или пароль'));
+            return next(new InvalidAuthError('Неверный логин или пароль1'));
+        }
+
+        // поле firebaseId = '' устанавливается только при регистрации
+        // => если = '', значит авторизация впервые
+        // и firebaseId нужно обновить в БД
+        if (user.firebaseId === ' ') {
+            user = await User.findByIdAndUpdate({ _id: user._id }, {firebaseId}, { returnDocument: 'after' });
         }
 
         // Обратите внимание - больше не передаём next
@@ -64,7 +71,6 @@ const loginUser = async (req, res, next) => {
         if (err instanceof DuplicateError) {
             return next(new InvalidAuthError('Устройство уже зарегистрировано'));
         }
-        console.error('Login error:', err);
         next(err);
     }
 }
