@@ -1,9 +1,8 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const createUserTokens = require('../services/user.service');
+const {createUserTokens} = require('../services/user.service');
 const InvalidAuthError = require ('../errors/invalid-auth.err');
 
-const {NODE_ENV, JWT_TOKEN} = process.env;
 // создание пользователя
 // не путать с регистрацией
 // тут я власть и я создаю пользователей
@@ -25,33 +24,48 @@ const createUser = (req, res, next) => {
 }
 
 // авторизация
-async function loginUser (req, res, next) {
-    const {
-        username, password, firebaseId, model
-    } = req.body;
-    const user = await User.findOne({ username }).select('+password');
-    if (!user) {
-        throw new InvalidAuthError('Неверный логин или пароль');
-    }
-    const userPasswordCompare = await bcrypt.compare(password, user.password);
-    if (userPasswordCompare) {
+const loginUser = async (req, res, next) => {
+    try {
+        const { username, password, firebaseId, model } = req.body;
+
+        if (!username || !password) {
+            return next(new InvalidAuthError('Необходимо указать логин и пароль'));
+        }
+
+        const user = await User.findOne({ username }).select('+password');
+        if (!user) {
+            return next(new InvalidAuthError('Неверный логин или пароль'));
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return next(new InvalidAuthError('Неверный логин или пароль'));
+        }
+
+        // Обратите внимание - больше не передаём next
         const tokens = await createUserTokens({
             userId: user._id,
             firebaseId,
             model,
             role: user.role,
         });
-        console.log(tokens);
-        if (!tokens) {
-            throw new Error('иди нахуй корочк');
-        }
-        res.status(200).setCookies(refreshToken).send({
+
+        res.cookie('refreshToken', tokens.refreshToken, {
+            httpOnly: true,
+            maxAge: 30 * 24 * 60 * 1000,
+            secure: true,
+            sameSite: 'strict'
+        }).status(200).json({
             access: tokens.accessToken,
-            // refresh: tokens.refreshToken,
-            // expiresIn: 3600,
             username: user.username,
             userId: user._id,
         });
+    } catch (err) {
+        if (err instanceof DuplicateError) {
+            return next(new InvalidAuthError('Устройство уже зарегистрировано'));
+        }
+        console.error('Login error:', err);
+        next(err);
     }
 }
 

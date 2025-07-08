@@ -5,40 +5,41 @@ const DuplicateError = require('../errors/duplicate.err');
 const { generateRefreshToken, generateAccessToken } = require('./token.service');
 
 // 
-async function createUserTokens({ owner, firebaseId, model, role }){
-    let device;
-    let refreshToken;
-    let token;
+const createUserTokens = async ({ userId, firebaseId, model, role }) => {
     try {
         // создается "карточка" устройства
-        device = await Device.create({
-            firebaseId, model
+        const device = await Device.create({
+            firebaseId, 
+            model
         });
 
-        token = await generateRefreshToken();
-        // на основе устройства создается долгосрок
-        refreshToken = await RefreshToken.create({ 
-            token: token.heshedToken,
-            owner,
+        const token = await generateRefreshToken();
+        
+        // на основе устройства создается refresh token
+        const refreshToken = await RefreshToken.create({ 
+            token: token.hashedToken, // исправлено heshed -> hashed
+            userId,
             firebaseId,
         });
-        if (!device || !refreshToken) {
-            throw new Error('gg');
-        }
+
+        const accessToken = generateAccessToken({
+            userId,
+            exp: '1h',
+            iat: Date.now(),
+            role: role,
+        });
+
+        return { 
+            refreshToken: token.refreshToken, 
+            accessToken 
+        };
     } catch(error) {
+        console.error('Token creation error:', error);
         if (error.code === 11000) {
-            throw new DuplicateError('Дубликат чево-та, например этот в user.service');
+            throw new DuplicateError('Устройство с таким firebaseId уже существует');
         }
-        throw error;
+        throw error; // пробрасываем ошибку дальше
     }
-    // создание краткосрочного токена
-    const accessToken = generateAccessToken({
-        userId: owner,
-        exp: '1h',
-        iat: Date.now(),
-        role: role,
-    });
-    return { refreshToken: token.refreshToken, accessToken };
 }
 
 module.exports = {

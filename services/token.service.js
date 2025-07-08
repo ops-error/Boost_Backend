@@ -8,8 +8,9 @@ const generateRefreshToken = async () => {
     // этот для клиента
     const refreshToken = crypto.randomBytes(64).toString('hex');
     // этот для БД
-    const heshedToken = await bcrypt.hash(refreshToken, 10);
-    return { refreshToken, heshedToken };
+    const hashedToken = await bcrypt.hash(refreshToken, 10);
+    console.log('generate token')
+    return { refreshToken, hashedToken };
 }
 
 // создание краткосрочного токена
