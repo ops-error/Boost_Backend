@@ -7,7 +7,7 @@ const {
 const {
     createUser,
     loginUser,
-} = require('../controllers/users');
+} = require('../controllers/auth.controller');
 
 router.post('/signin', validateSigninReq, loginUser);
 router.post('/signup', validateSignupReq, createUser);

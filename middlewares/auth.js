@@ -5,6 +5,8 @@ const UnauthorizedError = require('../errors/unauthorized.err');
 
 module.exports = (req, res, next) =>{
     const { authorization } = req.headers;
+    const refreshToken = req.cookies.refreshToken;
+    console.log(refreshToken);
 
     if (!authorization || !authorization.startsWith('Bearer ')) {
         throw new UnauthorizedError('Уходи отсюда, тебе сюда нельзя');

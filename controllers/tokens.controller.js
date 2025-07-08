@@ -27,30 +27,30 @@ const { JWT_TOKEN } = process.env;
 // }
 
 // обновление краткосрочного токена
-// const patchAccessToken = (req, res, next) => {
-//     const { refreshToken } = req.cookies.refreshToken;
+const patchAccessToken = (req, res, next) => {
+    const { refreshToken } = req.cookies.refreshToken;
 
-//     if (!refreshToken) {
-//         return res.status(401).json({ error: 'Refresh token is missing' });
-//     }
-//     const heshedToken = hash(refreshToken);
+    if (!refreshToken) {
+        return res.status(401).json({ error: 'Refresh token is missing' });
+    }
+    const heshedToken = hash(refreshToken);
 
-//     findOne({
-//         token: heshedToken,
-//         expiresAt: { $gt: new Date() }
-//     })
-//     .orFail(() => {
-//         throw new Error('Иди наху   й');
-//     })
-//     .then(() => {
+    findOne({
+        token: heshedToken,
+        expiresAt: { $gt: new Date() }
+    })
+    .orFail(() => {
+        throw new Error('Иди наху   й');
+    })
+    .then(() => {
 
-//         res.status(200).send({
-//             accessToken: newAccessToken,
-//             expiresIn: 3600
-//         });
-//     })
-//     .catch(next);
-// }
+        res.status(200).send({
+            accessToken: newAccessToken,
+            expiresIn: 3600
+        });
+    })
+    .catch(next);
+}
 
 module.exports = {
     // createRefreshToken
