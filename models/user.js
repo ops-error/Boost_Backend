@@ -25,9 +25,14 @@ const userSchema = new mongoose.Schema({
         default: 'guest',
     },
     firebaseId: {
-        type: String,
+        type: [String],
         required: true,
-        default: ' '
+        validate: {
+            validator: function(array) {
+                return array.length <= 2;
+            },
+            message: "Можно добавить только 2 устройства"
+        }
     }
 });
 

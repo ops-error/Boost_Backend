@@ -42,14 +42,20 @@ const loginUser = async (req, res, next) => {
             return next(new InvalidAuthError('Неверный логин или пароль1'));
         }
 
-        // поле firebaseId = '' устанавливается только при регистрации
-        // => если = '', значит авторизация впервые
-        // и firebaseId нужно обновить в БД
-        if (user.firebaseId === ' ') {
-            user = await User.findByIdAndUpdate({ _id: user._id }, {firebaseId}, { returnDocument: 'after' });
+        if (user.firebaseId.length >= 2) {
+            throw new InvalidAuthError('Иди наху');
         }
 
-        // Обратите внимание - больше не передаём next
+        user.firebaseId.forEach((element) => {
+            if (element === firebaseId) {
+                throw new DuplicateError('Такое устройство уже есть')
+            }
+        })
+        
+        user = await User.findByIdAndUpdate({ _id: user._id }, {$addToSet: {
+            firebaseId: firebaseId
+        }}, { new: true });
+
         const tokens = await createUserTokens({
             userId: user._id,
             firebaseId,

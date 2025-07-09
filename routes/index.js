@@ -10,10 +10,14 @@ const commandsRouter = require('./commands');
 const devicesRouter = require('./devices');
 const tokenMiddleware = require('../middlewares/token.middleware');
 const authMiddleware = require('../middlewares/auth.middleware');
+const {
+    deleteDevice
+} = require('../controllers/devices');
 
 router.use('/', authRouter);
 router.use('/user', tokenMiddleware, authMiddleware, usersRouter);
 router.use('/commands', tokenMiddleware, authMiddleware, commandsRouter);
-router.use('/device', tokenMiddleware, authMiddleware, devicesRouter);
+// router.use('/device', tokenMiddleware, authMiddleware, devicesRouter);
+router.delete('/device/:firebaseId', tokenMiddleware, authMiddleware, deleteDevice);
 
 module.exports = router;

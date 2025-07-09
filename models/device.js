@@ -9,6 +9,11 @@ const deviceSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'user',
+        required: true
+    }
 });
 
 module.exports = mongoose.model('device', deviceSchema);

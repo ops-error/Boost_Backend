@@ -9,7 +9,8 @@ const createUserTokens = async ({ userId, firebaseId, model, role }) => {
         // создается "карточка" устройства
         const device = await Device.create({
             firebaseId, 
-            model
+            model,
+            userId
         });
 
         const token = await generateRefreshToken();

@@ -1,8 +1,8 @@
 const router = require('express').Router();
 const {
-    // getDevice
+    deleteDevice
 } = require('../controllers/devices');
 
-// router.get('/', getDevice);
+// router.delete('/:firebaseId', deleteDevice);
 
 module.exports = router;

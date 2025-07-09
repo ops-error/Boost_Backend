@@ -1,31 +1,30 @@
 const Device = require('../models/device');
+const {deleteDeviceAndToken} = require('../services/device.service');
+const InvalidDataError = require('../errors/invalid-data.err');
 
-// создание нового девайса
-// почему не через req,res,next?
-// потому что самостоятельно он использоваться не будет
-// только в цепочке:
-// авторизация. клиент => создание девайса => создание рефреш токена => responce клиенту
 const createDevice = ({
-    model, firebaseId
+    model, firebaseId, userId
 }) => {
 
     Device.create({
-        model, firebaseId
+        model, firebaseId, userId
     })
     .then((device) => {return device});
 }
 
-// а вот это хз зачем я написала
-// может потом понадобится, а пока просто болванка
-// const getDevice = (req, res, next) => {
-//     const { id } = req.body;
-
-//     Device.findOne({ deviceId: id })
-//     .then((device) => res.send(device))
-//     .catch(next);
-// }
+const deleteDevice = async (req, res, next) => {
+    const {firebaseId} = req.params;
+    const {userId} = req.user;
+    const isSuccess = deleteDeviceAndToken({firebaseId, userId});
+    if (isSuccess) {
+        res.status(200).send('Всё получилось');
+    } else {
+        next(new InvalidDataError('Very Bad request'))
+    }
+}
 
 module.exports = {
     // getDevice,
     createDevice,
+    deleteDevice
 }

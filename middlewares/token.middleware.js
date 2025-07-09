@@ -5,11 +5,12 @@ const bcrypt = require('bcrypt');
 const {generateAccessToken} = require('../services/token.service');
 
 module.exports = async (req, res, next) =>{
-    const { authorization, firebaseId } = req.headers;
+    const { authorization } = req.headers;
+    const {firebaseId} = req.params;
     const { refreshToken } = req.cookies;
 
     if (!firebaseId || !refreshToken) {
-        throw new UnauthorizedError('Bad request');
+        throw new UnauthorizedError('Bad request1');
     }
 
     if (authorization || authorization.startsWith('Bearer ')) {
@@ -19,7 +20,7 @@ module.exports = async (req, res, next) =>{
     const tokenData = await RefreshToken.findOne({ firebaseId });
     const isValidToken = bcrypt.compare(refreshToken, tokenData.token);
     if (!isValidToken) {
-        throw new UnauthorizedError('Bad request');
+        throw new UnauthorizedError('Bad request2');
     }
     if (isValidToken && firebaseId && refreshToken && authorization) {
         next();
