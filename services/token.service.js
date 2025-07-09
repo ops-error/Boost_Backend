@@ -2,6 +2,9 @@ const jwt = require('jsonwebtoken');
 const { JWT_TOKEN } = process.env;
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
+const InvalidDataError = require('../errors/invalid-data.err');
+const RefreshToken = require('../models/refreshToken');
+const UnauthorizedError = require('../errors/unauthorized.err');
 
 // генерация долгосрока
 const generateRefreshToken = async () => {
@@ -16,15 +19,13 @@ const generateRefreshToken = async () => {
 // создание краткосрочного токена
 const generateAccessToken = ({
     userId,
-    exp,
-    iat,
     role
 }) => {
     return jwt.sign({
         userId,
-        iat,
+        iat: Date.now(),
         role
-    }, JWT_TOKEN, { expiresIn: exp });
+    }, JWT_TOKEN, { expiresIn: '1h' });
 }
 
 module.exports = {

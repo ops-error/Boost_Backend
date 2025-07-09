@@ -23,8 +23,6 @@ const createUserTokens = async ({ userId, firebaseId, model, role }) => {
 
         const accessToken = generateAccessToken({
             userId,
-            exp: '1h',
-            iat: Date.now(),
             role: role,
         });
 
@@ -33,9 +31,6 @@ const createUserTokens = async ({ userId, firebaseId, model, role }) => {
             accessToken 
         };
     } catch(error) {
-        if (error.code === 11000) {
-            throw new DuplicateError('Устройство с таким firebaseId уже существует');
-        }
         throw error; // пробрасываем ошибку дальше
     }
 }

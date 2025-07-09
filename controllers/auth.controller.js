@@ -68,9 +68,6 @@ const loginUser = async (req, res, next) => {
             userId: user._id,
         });
     } catch (err) {
-        if (err instanceof DuplicateError) {
-            return next(new InvalidAuthError('Устройство уже зарегистрировано'));
-        }
         next(err);
     }
 }

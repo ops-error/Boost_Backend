@@ -6,12 +6,14 @@ const router = require('express').Router();
 const authRouter = require('./auth');
 const usersRouter = require('./users');
 const commandsRouter = require('./commands');
-const authMiddleware = require('../middlewares/auth');
+// const authMiddleware = require('../middlewares/auth');
 const devicesRouter = require('./devices');
+const tokenMiddleware = require('../middlewares/token.middleware');
+const authMiddleware = require('../middlewares/auth.middleware');
 
 router.use('/', authRouter);
-router.use('/user', authMiddleware, usersRouter);
-router.use('/commands', authMiddleware, commandsRouter);
-router.use('/device', devicesRouter);
+router.use('/user', tokenMiddleware, authMiddleware, usersRouter);
+router.use('/commands', tokenMiddleware, authMiddleware, commandsRouter);
+router.use('/device', tokenMiddleware, authMiddleware, devicesRouter);
 
 module.exports = router;
