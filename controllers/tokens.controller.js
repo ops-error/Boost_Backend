@@ -28,8 +28,7 @@ const { JWT_TOKEN } = process.env;
 
 // обновление краткосрочного токена
 const patchAccessToken = (req, res, next) => {
-    const { refreshToken } = req.cookies.refreshToken;
-
+    const { refreshToken } = req.cookies;
     if (!refreshToken) {
         return res.status(401).json({ error: 'Refresh token is missing' });
     }

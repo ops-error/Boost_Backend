@@ -5,8 +5,7 @@ const bcrypt = require('bcrypt');
 const {generateAccessToken} = require('../services/token.service');
 
 module.exports = async (req, res, next) =>{
-    const { authorization } = req.headers;
-    const {firebaseId} = req.params;
+    const { authorization, firebaseId } = req.headers;
     const { refreshToken } = req.cookies;
 
     if (!firebaseId || !refreshToken) {

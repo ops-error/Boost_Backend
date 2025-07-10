@@ -18,6 +18,6 @@ router.use('/', authRouter);
 router.use('/user', tokenMiddleware, authMiddleware, usersRouter);
 router.use('/commands', tokenMiddleware, authMiddleware, commandsRouter);
 // router.use('/device', tokenMiddleware, authMiddleware, devicesRouter);
-router.delete('/device/:firebaseId', tokenMiddleware, authMiddleware, deleteDevice);
+router.delete('/deleteDevice', tokenMiddleware, authMiddleware, deleteDevice);
 
 module.exports = router;

@@ -13,8 +13,9 @@ const createDevice = ({
 }
 
 const deleteDevice = async (req, res, next) => {
-    const {firebaseId} = req.params;
     const {userId} = req.user;
+    const {firebaseId} = req.headers;
+
     const isSuccess = deleteDeviceAndToken({firebaseId, userId});
     if (isSuccess) {
         res.status(200).send('Всё получилось');

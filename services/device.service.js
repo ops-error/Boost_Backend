@@ -15,7 +15,7 @@ const deleteDeviceAndToken = async ({ firebaseId, userId }) => {
                 userId: userId
             }),
             User.findByIdAndUpdate(userId, {
-                $pull: { firebaseId }
+                $pull: { firebaseId: firebaseId }
             })
         ]).then(([d, r, u]) => {
             console.log(d, r, u);
