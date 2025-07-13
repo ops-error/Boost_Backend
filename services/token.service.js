@@ -2,9 +2,6 @@ const jwt = require('jsonwebtoken');
 const { JWT_TOKEN } = process.env;
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
-const InvalidDataError = require('../errors/invalid-data.err');
-const RefreshToken = require('../models/refreshToken');
-const UnauthorizedError = require('../errors/unauthorized.err');
 
 // генерация долгосрока
 const generateRefreshToken = async () => {

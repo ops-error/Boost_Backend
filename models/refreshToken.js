@@ -13,7 +13,10 @@ const refreshTokenSchema = new mongoose.Schema({
     firebaseId: {
         type: String,
         required: true,
-        unique: false,
+    },
+    isValid: {
+        type: Boolean,
+        required: true
     },
     createdAt: {
         type: Date,

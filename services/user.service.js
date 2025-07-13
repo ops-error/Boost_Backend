@@ -20,6 +20,7 @@ const createUserTokens = async ({ userId, firebaseId, model, role }) => {
             token: token.hashedToken, // исправлено heshed -> hashed
             userId,
             firebaseId,
+            isValid: true
         });
 
         const accessToken = generateAccessToken({

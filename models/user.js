@@ -24,7 +24,7 @@ const userSchema = new mongoose.Schema({
         enum: ['admin', 'homie', 'guest'],
         default: 'guest',
     },
-    firebaseId: {
+    devices: {
         type: [String],
         required: true,
         validate: {

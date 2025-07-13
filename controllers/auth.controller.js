@@ -1,9 +1,7 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
-const {createUserTokens} = require('../services/user.service');
 const InvalidAuthError = require ('../errors/invalid-auth.err');
-const DuplicateError = require('../errors/duplicate.err');
-const { generateRefreshToken, generateAccessToken } = require('../services/token.service');
+const {tokenIssuance} = require('../services/signin.service');
 
 // создание пользователя
 // не путать с регистрацией
@@ -45,35 +43,13 @@ const loginUser = async (req, res, next) => {
             return next(new InvalidAuthError('Неверный логин или пароль1'));
         }
         
-        let tokens;
-        // если такого устройства нет
-        if (!user.firebaseId.includes(firebaseId)) {
-            // если кол-во устройств больше допустимого
-            if (user.firebaseId.length >= 2) {
-                throw new InvalidAuthError('Превышено количество зарегестрированных устройств');
-            }
-            // если устройства нет, но можно добавить
-            tokens = await createUserTokens({
-                userId: user._id,
-                firebaseId,
-                model,
-                role: user.role,
-            });
-            await User.findOneAndUpdate({_id: user._id}, {
-                $addToSet: {
-                    firebaseId: firebaseId
-                }
-            })
-        } else {
-        // если такое устройство есть, то генерим новые токены
-        tokens = {
-            accessToken: generateAccessToken({
-                userId: user._id,
-                role: user.role
-            }),
-            refreshToken: generateRefreshToken()
-            };
-        }
+        const tokens = await tokenIssuance({
+            devices: user.devices,
+            firebaseId,
+            userId: user._id,
+            model,
+            role: user.role
+        });
 
         res.cookie('refreshToken', tokens.refreshToken, {
             httpOnly: true,
