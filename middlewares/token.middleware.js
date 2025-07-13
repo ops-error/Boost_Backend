@@ -6,33 +6,34 @@ const {generateAccessToken} = require('../services/token.service');
 
 // проверка на наличие токенов
 module.exports = async (req, res, next) =>{
-    const { authorization, firebaseId } = req.headers;
-    const { refreshToken } = req.cookies;
+    const { authorization, firebaseid } = req.headers;
+    const refreshToken = req.headers.cookie;
+    console.log(refreshToken);
 
     // если оба токена отсутствуют => ошибка
-    if (!firebaseId || !refreshToken) {
+    if (!firebaseid || !refreshToken || !refreshToken.startsWith('refreshToken=')) {
         throw new UnauthorizedError('Bad request1');
     }
     // ________________________________________________________
     // если нет access токена, но есть refresh токен
 
-    // поиск данных токена через firebaseId
-    const tokenData = await RefreshToken.findOne({ firebaseId });
-    const isValidToken = bcrypt.compare(refreshToken, tokenData.token);
+    // поиск данных токена через firebaseid
+    const tokenData = await RefreshToken.findOne({ firebaseId: firebaseid });
+    const isValidToken = bcrypt.compare(refreshToken.replace('refreshToken=', ''), tokenData.token);
     // если хэш refresh токена не совпадает => ошибка
     if (!isValidToken) {
         throw new UnauthorizedError('Bad request2');
     }
-    // если хэш совпадает & наличие firebaseId &
+    // если хэш совпадает & наличие firebaseid &
     // наличие refresh токена & наличие access токена
     // => next
-    if (isValidToken && firebaseId && refreshToken && authorization.startsWith('Bearer ')) {
+    if (isValidToken && firebaseid && refreshToken && authorization.startsWith('Bearer ')) {
         next();
     }
 
     // если access токена все же нет, то
     // создается новый
-    const userData = await User.findOne({ firebaseId });
+    const userData = await User.findOne({ firebaseId: firebaseid });
     let newAccessToken;
     if (!authorization || !authorization.startsWith('Bearer ')) {
         newAccessToken = generateAccessToken({

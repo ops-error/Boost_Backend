@@ -1,7 +1,9 @@
 const bcrypt = require('bcrypt');
 const User = require('../models/user');
+const RefreshToken = require('../models/refreshToken');
 const InvalidAuthError = require ('../errors/invalid-auth.err');
 const {tokenIssuance} = require('../services/signin.service');
+const {COOKIE_SETTINGS} = process.env;
 
 // создание пользователя
 // не путать с регистрацией
@@ -50,12 +52,8 @@ const loginUser = async (req, res, next) => {
             role: user.role
         });
 
-        res.cookie('refreshToken', tokens.refreshToken, {
-            httpOnly: true,
-            maxAge: 30 * 24 * 60 * 1000,
-            secure: true,
-            sameSite: 'strict'
-        }).status(200).json({
+        res.cookie('refreshToken', tokens.refreshToken, COOKIE_SETTINGS)
+        .status(200).json({
             access: tokens.accessToken,
             username: user.username,
             userId: user._id,
@@ -65,23 +63,22 @@ const loginUser = async (req, res, next) => {
     }
 }
 
-// обновление ника
-// вообще хз, пока этот контроллер не развиваю
-// у меня там токены-хуёкины плохо работают,
-// а тут эта хуня
-// const patchName = (req, res, next) => {
-//     const {
-//         name
-//     } = req.body;
-//     findByIdAndUpdate(req.user._id, {name}, { returnDocument: 'after' })
-//     .orFail()
-//     .then((user) => {
-//         res.send({user})
-//     })
-//     .catch(err => next(err));
-// }
+const logoutUser = (req, res, next) => {
+    const {firebaseid} = req.headers;
+    RefreshToken.findOneAndUpdate({ firebaseId: firebaseid }, {
+        isValid: false
+    }, { returnDocument: 'after' })
+    .then(() =>{
+        res.clearCookie('refreshToken', COOKIE_SETTINGS);
+        res.status(200).send({
+            message: 'Выход из аккаунта успешный'
+        })
+    })
+    .catch(next);
+}
 
 module.exports = {
     createUser,
     loginUser,
+    logoutUser
 };
