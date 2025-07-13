@@ -16,7 +16,6 @@ const createUser = (req, res, next) => {
     }))
     .then((user) => res.send({
         username: user.username,
-        name: user.name,
         userId: user._id
     }))
     .catch(next);

@@ -6,8 +6,6 @@ const router = require('express').Router();
 const authRouter = require('./auth');
 const usersRouter = require('./users');
 const commandsRouter = require('./commands');
-// const authMiddleware = require('../middlewares/auth');
-const devicesRouter = require('./devices');
 const tokenMiddleware = require('../middlewares/token.middleware');
 const authMiddleware = require('../middlewares/auth.middleware');
 const {
@@ -17,7 +15,6 @@ const {
 router.use('/', authRouter);
 router.use('/user', tokenMiddleware, authMiddleware, usersRouter);
 router.use('/commands', tokenMiddleware, authMiddleware, commandsRouter);
-// router.use('/device', tokenMiddleware, authMiddleware, devicesRouter);
 router.delete('/deleteDevice', tokenMiddleware, authMiddleware, deleteDevice);
 
 module.exports = router;
