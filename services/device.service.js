@@ -4,7 +4,6 @@ const User = require('../models/user');
 
 const deleteDeviceAndToken = async ({ firebaseId, userId }) => {
     try{
-        console.log(userId, firebaseId);
         Promise.all([
             Device.findOneAndDelete({
                 firebaseId: firebaseId,
@@ -14,6 +13,11 @@ const deleteDeviceAndToken = async ({ firebaseId, userId }) => {
                 firebaseId: firebaseId,
                 userId: userId
             }),
+            // не удаляет из массива.
+            // сафонов - исправь
+            // еще нужно, чтобы куки удалялись
+            // и в res authorization
+            // короче, переделай
             User.findByIdAndUpdate(userId, {
                 $pull: { firebaseId: firebaseId }
             })

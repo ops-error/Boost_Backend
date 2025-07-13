@@ -14,10 +14,13 @@ const createDevice = ({
 
 const deleteDevice = async (req, res, next) => {
     const {userId} = req.user;
-    const {firebaseId} = req.headers;
+    const {firebaseid} = req.headers;
 
-    const isSuccess = deleteDeviceAndToken({firebaseId, userId});
+    const isSuccess = deleteDeviceAndToken({firebaseId: firebaseid, userId});
     if (isSuccess) {
+        delete req.firebaseid;
+        delete req.user;
+        delete req.authorization;
         res.status(200).send('Всё получилось');
     } else {
         next(new InvalidDataError('Very Bad request'))
