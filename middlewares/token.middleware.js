@@ -7,11 +7,10 @@ const {generateAccessToken} = require('../services/token.service');
 // проверка на наличие токенов
 module.exports = async (req, res, next) =>{
     const { authorization, firebaseid } = req.headers;
-    const refreshToken = req.headers.cookie;
-    console.log(refreshToken);
+    const refreshToken = req.cookies.refreshToken;
 
     // если оба токена отсутствуют => ошибка
-    if (!firebaseid || !refreshToken || !refreshToken.startsWith('refreshToken=')) {
+    if (!firebaseid || !refreshToken) {
         throw new UnauthorizedError('Bad request1');
     }
     // ________________________________________________________

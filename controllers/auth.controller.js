@@ -51,9 +51,8 @@ const loginUser = async (req, res, next) => {
             model,
             role: user.role
         });
-
-        res.cookie('refreshToken', tokens.refreshToken, COOKIE_SETTINGS)
-        .status(200).json({
+        res.cookie('refreshToken', tokens.refreshToken.refreshToken, COOKIE_SETTINGS)
+        .status(200).send({
             access: tokens.accessToken,
             username: user.username,
             userId: user._id,

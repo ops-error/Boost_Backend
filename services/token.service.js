@@ -9,7 +9,6 @@ const generateRefreshToken = async () => {
     const refreshToken = crypto.randomBytes(64).toString('hex');
     // этот для БД
     const hashedToken = await bcrypt.hash(refreshToken, 10);
-    console.log('generate token')
     return { refreshToken, hashedToken };
 }
 

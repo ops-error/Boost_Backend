@@ -46,7 +46,7 @@ const tokenIssuance = async ({
                 userId,
                 role
             }),
-            refreshToken: generateRefreshToken()
+            refreshToken: await generateRefreshToken()
         };
     }
 }
